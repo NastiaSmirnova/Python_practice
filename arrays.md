@@ -8,23 +8,6 @@
 Возвращение отсортированного массива, состоящего из элементов начального массива, возведенных в квадрат за O(n)
 
 ```python
-
-def merge(first, second):
-    result = []
-    count_el = len(first) + len(second)
-    for i in range(count_el):
-        if first != [] and second != []:
-            if first[0] <= second[0]:
-                result.append(first.pop(0))
-            else:
-                result.append(second.pop(0))
-        elif not first:
-            result.append(second.pop(0))
-        elif not second:
-            result.append(first.pop(0))
-    return result
-
-
 def merge(first, second):
     res=[]
     i=0
