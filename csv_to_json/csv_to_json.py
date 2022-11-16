@@ -23,8 +23,8 @@ def convert_row_to_pretty_json(keys, row):
     d=dict(zip(keys, values))
     
     template ="""{{
-"name": {},
 "id": {},
+"name": {},
 "birth": {},
 "salary": {},
 "department": {}
