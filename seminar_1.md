@@ -2,6 +2,8 @@
 
 + [Task 1](#task-1)
 + [Task 2](#task-2)
++ [Task 3](#task-3)
+
 
 ## Task 1
 % 3 == 0 hello, 
