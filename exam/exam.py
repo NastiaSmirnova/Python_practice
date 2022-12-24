@@ -19,53 +19,46 @@ class StrategyDeal:
 
     def __str__(self):
         # текстовое представление сделки
-        s = f' START_PRICE: {self.entry}\n STOP_PRICE: {self.close}\n BANK: {self.bank}\n\n' 
+        s = f'START_PRICE: {self.entry}\nSTOP_PRICE: {self.close}\nBANK: {self.bank}\n\n' 
         ts = self.get_targets()
         ps = self.get_target_percents()
         bs = self.get_target_banks()
 
-        for i, t in enumerate(ts):
-          s = s + f'{i+1} target: {t}\n Percent: {ps[i]}%\n Bank: {bs[i]}\n\n'
+        for i, (t,p,b) in enumerate(zip(ts,ps,bs)):
+          s = s + f'{i+1} target: {t}\nPercent: {p}%\nBank: {b}\n\n'
 
         return s
-
-def read_data(file_name):
-    deals = []
-    last_line = False
+def parse_deal(l_deal):
     bank = None
     entry = None
     targets = None
     close = None
+
+    for s in l_deal:
+        if s.startswith("BANK:"):
+            _, b = s.split()
+            bank = float(b)
+
+        if s.startswith("Вход:"):
+            _, b = s.split()
+            entry = float(b)
+
+        if s.startswith("Таргет:"):
+            _, b = s.split(" ",1)
+            targets = list(map(float, b.split(',')))
+
+        if s.startswith("Выход:"):
+            _, b = s.split()
+            close = float(b)
+
+    return StrategyDeal(bank, entry, targets, close)
+
+def read_data(file_name):
     with open(file_name, "r",encoding="utf-8") as f:
-        for line in f.readlines():
-            if line.startswith("-----"):
-                last_line = True
-                deals.append(StrategyDeal(bank, entry, targets, close))
-
-            if line.startswith("BANK:"):
-                last_line = False
-                _, b = line.split()
-                bank = float(b)
-
-            if line.startswith("Вход:"):
-                last_line = False
-                _, b = line.split()
-                entry = float(b)
-
-            if line.startswith("Таргет:"):
-                last_line = False
-                _, b = line.split(" ",1)
-                targets = list(map(float, b.split(',')))
-
-            if line.startswith("Выход:"):
-                last_line = False
-                _, b = line.split()
-                close = float(b)
-
-    if not last_line:
-        deals.append(StrategyDeal(bank, entry, targets, close))
-    return deals
-
+        return list(map(
+            lambda d: parse_deal(filter(lambda x: len(x.strip()) > 0, d.split('\n'))),
+            f.read().split("-----")
+            ))
 
 def write_data(file_name, data):
     with open(file_name, "w") as f:
